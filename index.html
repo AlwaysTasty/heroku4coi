@@ -92,36 +92,42 @@
   </div>
 
   <div class="input-group">
-    <label for="dateInput">Date:</label>
+    <label for="box1">Box 1 (Negative/Positive):</label>
+    <select id="box1">
+      <option value="Negative" selected>Negative</option>
+      <option value="Positive">Positive</option>
+    </select>
+  
+    <label for="dateInput">Select Date:</label>
     <input type="date" id="dateInput">
-    
-    <label for="timeInput">Time:</label>
+  
+    <label for="timeInput">Select Time:</label>
     <input type="time" id="timeInput">
-
-    <label for="box4">Detection/COI:</label>
-    <select id="box4">
+  
+    <label for="box3">Box 3 (Detection/COI):</label>
+    <select id="box3">
       <option value="Detection" selected>Detection</option>
       <option value="COI">COI</option>
     </select>
-
-    <label for="box5">RGC/BCA</label>
-    <select id="box5">
+  
+    <label for="box4">Box 4 (RGC/BCA):</label>
+    <select id="box4">
       <option value="RGC" selected>RGC</option>
       <option value="BCA">BCA</option>
     </select>
-
-    <label for="box6">Terminal (T1-T4):</label>
-    <select id="box6">
-      <option value="" selected disabled>Select Terminal</option>
+  
+    <label for="box5">Box 5 (T1-T4):</label>
+    <select id="box5">
+      <option value="" disabled selected>Select Terminal</option>
       <option value="T1">T1</option>
       <option value="T2">T2</option>
       <option value="T3">T3</option>
       <option value="T4">T4</option>
     </select>
-
-    <label for="box7">Type(2edit):</label>
-    <input list="box7Options" id="box7" name="box7">
-    <datalist id="box7Options">
+  
+    <label for="box6">Box 6 (A-G, editable):</label>
+    <input list="box6Options" id="box6">
+    <datalist id="box6Options">
       <option value="A">
       <option value="B">
       <option value="C">
@@ -131,9 +137,58 @@
       <option value="G">
     </datalist>
 
-    <label for="box8">Brief Facts:</label>
-    <input id="box8" name="box8">
+    <h3>Personnels</h3>
+<table>
+  <tr>
+    <td><input type="checkbox" id="siMani" value="SI Mani" name="personnels"></td>
+    <td>SI Mani</td>
+  </tr>
+  <tr>
+    <td><input type="checkbox" id="sgtRyan" value="Sgt3 Ryan" name="personnels"></td>
+    <td>Sgt3 Ryan</td>
+  </tr>
+  <tr>
+    <td><input type="checkbox" id="huiwen" value="SC/Cpl Huiwen" name="personnels"></td>
+    <td>SC/Cpl Huiwen</td>
+  </tr>
+</table>
+
+  <br>
+
+  <label for="dog">Dog:</label>
+  <select id="dog">
+    <option value="NDD 'Codey'" selected>NDD 'Codey'</option>
+    <option value="NDD 'Marica'">NDD 'Marica'</option>
+    <option value="NDD 'Coke'">NDD 'Coke'</option>
+  </select>
+
+  <br><br>
+
+  <label for="gender">Gender:</label>
+  <select id="gender">
+    <option value="male" selected>Male</option>
+    <option value="female">Female</option>
+  </select>
+
+  <br><br>
+
+  <label for="coi">COI:</label>
+  <input type="text" id="coi" placeholder="Enter COI">
+
+  <br><br>
+
+  <label for="refer">Refer:</label>
+  <select id="refer">
+    <option value="ICA" selected>ICA</option>
+    <option value="APD">APD</option>
+  </select>
+
+  <label for="imageUpload">Upload Image (Box 8):</label>
+    <input type="file" id="imageUpload" accept="image/*">
+  <br><br>
+
   </div>
+  
 
   <button onclick="generateTable()">Confirm</button>
 
@@ -146,8 +201,8 @@
         <th>Box 4</th>
         <th>Box 5</th>
         <th>Box 6</th>
-        <th>Box 7</th>
-        <th>Box 8</th>
+        <th>Box 7 (Narrative)</th>
+        <th>Box 8 (Image)</th>
       </tr>
     </thead>
     <tbody id="tableBody">
@@ -186,40 +241,125 @@
     });
 
     function generateTable() {
-    const date = document.getElementById('dateInput').value;
-    const time = document.getElementById('timeInput').value;
+  const box1 = document.getElementById("box1").value;
 
-    if (!date || !time) {
-        alert("Please select both date and time.");
-        return;
-    }
+  const date = document.getElementById("dateInput").value;
+  const time = document.getElementById("timeInput").value;
 
-    const [year, month, day] = date.split("-");
-    const [hh, mm] = time.split(":");
+  if (!date || !time) {
+    alert("Please select both date and time.");
+    return;
+  }
 
-    const box1 = `${day}/${month}/${year}\n@${hh}${mm}hrs`; // Now both in Box 1
-    const box2 = "C";
-    const box3 = document.getElementById("box4").value;
-    const box4 = document.getElementById("box5").value;
-    const box5 = document.getElementById("box6").value || "";
-    const box6 = document.getElementById("box7").value || "";
-    const box7 = "";
+  const [year, month, day] = date.split("-");
+  const [hh, mm] = time.split(":");
+  const box2 = `${day}/${month}/${year}\n@${hh}${mm}hrs`;
 
-    const rowHTML = `<tr>
-        <td style="white-space: pre-line;">${box1}</td>
-        <td>${box2}</td>
+  const box3 = document.getElementById("box3").value;
+  const box4 = document.getElementById("box4").value;
+  const box5 = document.getElementById("box5").value || "";
+  const box6 = document.getElementById("box6").value || "";
+
+  // Personnels
+  const selectedPersonnels = Array.from(document.querySelectorAll('input[name="personnels"]:checked'))
+    .map(cb => cb.value);
+
+  let personnelFormatted = selectedPersonnels.join(", ").replace(/,([^,]*)$/, ", and$1").trim();
+  if (selectedPersonnels.length === 2) {
+    personnelFormatted = selectedPersonnels.join(" and ");
+  }
+
+  const dog = document.getElementById("dog").value;
+  const gender = document.getElementById("gender").value;
+  const coi = document.getElementById("coi").value || "[COI]";
+  const refer = document.getElementById("refer").value;
+
+  const pronoun = gender === "male" ? "him" : "her";
+  const possessive = gender === "male" ? "his" : "her";
+
+  let dogHandler = "";
+  if (dog.includes("Codey")) dogHandler = "SI Mani";
+  else if (dog.includes("Marica")) dogHandler = "Sgt3 Ryan";
+  else if (dog.includes("Coke")) dogHandler = "SC/Cpl Huiwen";
+
+  let location = "";
+switch (box5) {
+  case "T1":
+    location = "Terminal 1";
+    break;
+  case "T2":
+    location = "Terminal 2";
+    break;
+  case "T3":
+    location = "Terminal 3";
+    break;
+  case "T4":
+    location = "Terminal 4";
+    break;
+  default:
+    location = "[Terminal]";
+}
+
+
+  const box7 = `${personnelFormatted} observed one ${gender} passenger who appeared to be nervous and behaved suspiciously upon seeing K-9 officers at ${location} arrival hall transit area, red green channel.
+
+When the ${gender} passenger was about to leave the transit arrival hall, K-9 officers approached ${pronoun}. Dog search was conducted on ${pronoun} passenger's luggage by ${dogHandler} using ${dog} and the result was negative.
+
+K-9 officers led the ${gender} passenger to the ICA X-ray machine for further checks and found ${coi} in the ${gender} passenger's luggage.
+
+The ${gender} passenger and the case exhibits were referred to ${refer} for follow-up action.`;
+
+  // IMAGE HANDLING
+  const imageInput = document.getElementById("imageUpload");
+  const file = imageInput.files[0];
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const imageHTML = `<img src="${e.target.result}" alt="Uploaded Image" width="100">`;
+
+      const rowHTML = `<tr>
+        <td>${box1}</td>
+        <td style="white-space: pre-line;">${box2}</td>
         <td>${box3}</td>
         <td>${box4}</td>
         <td>${box5}</td>
         <td>${box6}</td>
-        <td>${box7}</td>
+        <td style="white-space: pre-line;">${box7}</td>
+        <td>${imageHTML}</td>
+      </tr>`;
+
+      document.getElementById("tableBody").innerHTML = rowHTML;
+      document.getElementById("outputTable").classList.remove("hidden");
+
+      // Copy text only (image not included in clipboard text)
+      const copyText = `${box1}\t${box2}\t${box3}\t${box4}\t${box5}\t${box6}\n\n${box7}`;
+      const tempArea = document.createElement("textarea");
+      tempArea.value = copyText;
+      document.body.appendChild(tempArea);
+      tempArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempArea);
+
+      alert("Copied to clipboard! (image shown in table only)");
+    };
+    reader.readAsDataURL(file);
+  } else {
+    const rowHTML = `<tr>
+      <td>${box1}</td>
+      <td style="white-space: pre-line;">${box2}</td>
+      <td>${box3}</td>
+      <td>${box4}</td>
+      <td>${box5}</td>
+      <td>${box6}</td>
+      <td style="white-space: pre-line;">${box7}</td>
+      <td></td>
     </tr>`;
 
     document.getElementById("tableBody").innerHTML = rowHTML;
     document.getElementById("outputTable").classList.remove("hidden");
 
-    // Copy to clipboard
-    const copyText = `${day}/${month}/${year}\n@${hh}${mm}hrs\t${box2}\t${box3}\t${box4}\t${box5}\t${box6}\t${box7}`;
+    const copyText = `${box1}\t${box2}\t${box3}\t${box4}\t${box5}\t${box6}\n\n${box7}`;
     const tempArea = document.createElement("textarea");
     tempArea.value = copyText;
     document.body.appendChild(tempArea);
@@ -228,8 +368,14 @@
     document.body.removeChild(tempArea);
 
     alert("Copied to clipboard!");
-    }
+  }
+}
+
+
+
 
   </script>
+
+  
 </body>
 </html>
